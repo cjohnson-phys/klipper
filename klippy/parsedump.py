@@ -7,39 +7,42 @@
 import os, sys, logging
 import msgproto
 
-def read_dictionary(filename):
-    dfile = open(filename, 'rb')
-    dictionary = dfile.read()
-    dfile.close()
-    return dictionary
 
-def main():
-    dict_filename, data_filename = sys.argv[1:]
+def read_dictionary(filename: str) -> bytes:
+	dfile = open(filename, "rb")
+	dictionary = dfile.read()
+	dfile.close()
+	return dictionary
 
-    dictionary = read_dictionary(dict_filename)
 
-    mp = msgproto.MessageParser()
-    mp.process_identify(dictionary, decompress=False)
+def main() -> None:
+	dict_filename, data_filename = sys.argv[1:]
 
-    f = open(data_filename, 'rb')
-    fd = f.fileno()
-    data = bytearray()
-    while 1:
-        newdata = os.read(fd, 4096)
-        if not newdata:
-            break
-        data += bytearray(newdata)
-        while 1:
-            l = mp.check_packet(data)
-            if l == 0:
-                break
-            if l < 0:
-                logging.error("Invalid data")
-                data = data[-l:]
-                continue
-            msgs = mp.dump(data[:l])
-            sys.stdout.write('\n'.join(msgs[1:]) + '\n')
-            data = data[l:]
+	dictionary = read_dictionary(dict_filename)
 
-if __name__ == '__main__':
-    main()
+	mp = msgproto.MessageParser()
+	mp.process_identify(dictionary, decompress=False)
+
+	f = open(data_filename, "rb")
+	fd = f.fileno()
+	data = bytearray()
+	while True:
+		newdata = os.read(fd, 4096)
+		if not newdata:
+			break
+		data += bytearray(newdata)
+		while True:
+			l = mp.check_packet(data)
+			if l == 0:
+				break
+			if l < 0:
+				logging.error("Invalid data")
+				data = data[-l:]
+				continue
+			msgs = mp.dump(data[:l])
+			sys.stdout.write("\n".join(msgs[1:]) + "\n")
+			data = data[l:]
+
+
+if __name__ == "__main__":
+	main()

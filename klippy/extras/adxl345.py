@@ -4,6 +4,8 @@
 #
 # This file may be distributed under the terms of the GNU GPLv3 license.
 import logging, time, collections, multiprocessing, os
+
+from klippy.configfile import ConfigWrapper
 from . import bus, bulk_sensor
 
 # ADXL345 registers
@@ -105,7 +107,7 @@ class AccelQueryHelper:
 
 # Helper class for G-Code commands
 class AccelCommandHelper:
-    def __init__(self, config, chip):
+    def __init__(self, config: ConfigWrapper, chip):
         self.printer = config.get_printer()
         self.chip = chip
         self.bg_client = None
@@ -191,7 +193,7 @@ BATCH_UPDATES = 0.100
 
 # Printer class that controls ADXL345 chip
 class ADXL345:
-    def __init__(self, config):
+    def __init__(self, config: ConfigWrapper):
         self.printer = config.get_printer()
         AccelCommandHelper(config, self)
         self.axes_map = read_axes_map(config)
@@ -324,8 +326,8 @@ class ADXL345:
         return {'data': samples, 'errors': self.last_error_count,
                 'overflows': self.clock_updater.get_last_overflows()}
 
-def load_config(config):
+def load_config(config: ConfigWrapper):
     return ADXL345(config)
 
-def load_config_prefix(config):
+def load_config_prefix(config: ConfigWrapper) -> ADXL345:
     return ADXL345(config)

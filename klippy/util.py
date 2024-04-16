@@ -3,8 +3,10 @@
 # Copyright (C) 2016-2020  Kevin O'Connor <kevin@koconnor.net>
 #
 # This file may be distributed under the terms of the GNU GPLv3 license.
+from pathlib import Path
 import sys, os, pty, fcntl, termios, signal, logging, json, time
 import subprocess, traceback, shlex
+from typing import Any, Dict, List, Union
 
 
 ######################################################################
@@ -31,7 +33,7 @@ def clear_hupcl(fd):
         pass
 
 # Support for creating a pseudo-tty for emulating a serial port
-def create_pty(ptyname):
+def create_pty(ptyname: Path) -> int:
     mfd, sfd = pty.openpty()
     try:
         os.unlink(ptyname)
@@ -182,13 +184,13 @@ def _get_repo_info(gitdir):
         logging.debug("Error fetching repo info: %s", traceback.format_exc())
     return repo_info
 
-def get_git_version(from_file=True):
-    git_info = {
+def get_git_version(from_file=True) -> Dict[str, Any]:
+    git_info: Dict[str, Union[str, List[List[str]]]] = {
         "version": "?",
-        "file_status": [],
         "branch": "?",
         "remote": "?",
-        "url": "?"
+        "url": "?",
+        "file_status": [],
     }
     klippy_src = os.path.dirname(__file__)
 

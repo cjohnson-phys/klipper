@@ -1035,7 +1035,7 @@ def error_help(msg):
                 return help_msg
     return ""
 
-def add_printer_objects(config):
+def add_printer_objects(config) -> None:
     printer = config.get_printer()
     reactor = printer.get_reactor()
     mainsync = clocksync.ClockSync(reactor)

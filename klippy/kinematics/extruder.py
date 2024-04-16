@@ -299,7 +299,7 @@ class DummyExtruder:
     def get_trapq(self):
         raise self.printer.command_error("Extruder not configured")
 
-def add_printer_objects(config):
+def add_printer_objects(config) -> None:
     printer = config.get_printer()
     for i in range(99):
         section = 'extruder'
